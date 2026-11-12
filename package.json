@@ -1,0 +1,23 @@
+{
+  "name": "embryoguard-near",
+  "version": "1.0.0",
+  "description": "Embryologist-Led Transparent IVF Outcome Assurance Vault, Milestone Escrow & Cross-Border Medical Tourism Advisory on NEAR Protocol",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test/verify.js"
+  },
+  "keywords": [
+    "NEAR",
+    "NEAR-Intents",
+    "Chain-Signatures",
+    "Private-AI",
+    "IVF",
+    "Embryology",
+    "Medical-Tourism",
+    "Outcome-Assurance-Vault"
+  ],
+  "author": "Caner (Senior Clinical Embryologist)",
+  "license": "MIT"
+}
