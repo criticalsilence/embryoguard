@@ -6,61 +6,45 @@
 const assert = require("assert");
 const Engine = require("../src/embryology_engine.js");
 
-console.log("🔬 Running EmbryoGuard Clinical & NEAR Vault Verification Suite...\n");
+console.log("🔬 Running EmbryoGuard Preliminary Assessment & Dynamic NEAR Refund Verification Suite...\n");
 
-// Test 1: Embryology Oocyte-to-Blastocyst Funnel & Gardner Grading
-const caseYoungHighGrade = Engine.calculateEmbryologyOutcome({
-  age: 31,
-  amh: 2.8,
+// Test 1: Preliminary Assessment & Dynamic Refund Rate for Normal Parameters
+const caseHigh = Engine.calculatePreliminaryAssessment({
+  age: 30,
+  amh: 2.4,
+  amhKnown: true,
   priorCycles: 0,
-  spermFactor: "normozoospermia",
-  gardnerGrade: "5AA",
-  usePgtA: true
+  spermCategory: "normal"
 });
 
-assert(caseYoungHighGrade.funnel.expectedOocytesOPU >= 10, "Expected >=10 oocytes for AMH 2.8");
-assert(
-  caseYoungHighGrade.funnel.matureMIIOocytes <= caseYoungHighGrade.funnel.expectedOocytesOPU,
-  "MII oocytes cannot exceed retrieved OPU oocytes"
-);
-assert(
-  caseYoungHighGrade.probabilities.singleCycleSuccessPct >= 65,
-  "5AA Euploid transfer for age 31 should have >=65% clinical pregnancy probability"
-);
-assert.strictEqual(
-  caseYoungHighGrade.vaultTerms.refundGuaranteePct,
-  55,
-  "High probability tier should qualify for 55% automated refund guarantee"
-);
-console.log("✅ [PASS] Test 1: Oocyte-to-Blastocyst Funnel & Gardner 5AA Actuarial Model");
+assert.strictEqual(caseHigh.isFinal, false, "Assessment must explicitly be marked as non-final preliminary estimate");
+assert(caseHigh.preliminaryEstimatePct >= 55, "Preliminary estimate for age 30 / normal sperm should be >=55%");
+assert(caseHigh.dynamicRefundPct >= 45, "Dynamic refund rate should scale with preliminary estimate");
+console.log("✅ [PASS] Test 1: Preliminary Estimate & Dynamic Refund Rate:", caseHigh.preliminaryEstimatePct + "% / Refund:", caseHigh.dynamicRefundPct + "%");
 
-// Test 2: Advanced Maternal Age & Severe Sperm Factor Sensitivity
-const caseAdvancedAge = Engine.calculateEmbryologyOutcome({
+// Test 2: Dynamic Refund Rate Changes Based on Parameters (Not Static!)
+const caseLow = Engine.calculatePreliminaryAssessment({
   age: 41,
-  amh: 0.7,
+  amh: 0.5,
+  amhKnown: true,
   priorCycles: 2,
-  spermFactor: "severe_oat_high_dfi",
-  gardnerGrade: "3BB",
-  usePgtA: false
+  spermCategory: "severe_low"
 });
 
 assert(
-  caseAdvancedAge.probabilities.singleCycleSuccessPct < caseYoungHighGrade.probabilities.singleCycleSuccessPct,
-  "Advanced maternal age + low AMH + 3BB without PGT-A must yield lower single-cycle probability"
+  caseLow.preliminaryEstimatePct < caseHigh.preliminaryEstimatePct,
+  "Lower reserve and reduced sperm motility/count must yield lower preliminary estimate"
 );
-console.log("✅ [PASS] Test 2: Clinical Sensitivity for Low Ovarian Reserve (DOR) & High Sperm DFI");
+assert(
+  caseLow.dynamicRefundPct !== caseHigh.dynamicRefundPct,
+  "Refund rate must be dynamic and change according to the calculated preliminary ratio"
+);
+console.log("✅ [PASS] Test 2: Dynamic Refund Scaling Verified:", caseLow.preliminaryEstimatePct + "% / Refund:", caseLow.dynamicRefundPct + "%");
 
-// Test 3: NEAR AI TEE Private Attestation Generation
-const tee = Engine.createPrivateAiAttestation({ age: 33, amh: 2.1, gardnerGrade: "4AA" });
-assert.strictEqual(tee.piiStripped, true, "PII must be stripped inside TEE enclave");
-assert(tee.attestationHash.startsWith("0x"), "TEE attestation hash must be hex formatted");
-console.log("✅ [PASS] Test 3: NEAR AI Cloud (TEE) Privacy Attestation Hash:", tee.attestationHash);
-
-// Test 4: NEAR Intents Cross-Chain Quote & Refund Calculation
-const quoteUsdc = Engine.createNearIntentQuote(5400, "USDC (Arbitrum / Base)");
-const quoteBtc = Engine.createNearIntentQuote(5400, "BTC (Chain Signatures MPC)");
-assert.strictEqual(quoteUsdc.usdEquivalent, 5400);
-assert(quoteBtc.tokenAmount.includes("BTC"), "BTC quote must convert USD package to BTC via Chain Signatures");
-console.log("✅ [PASS] Test 4: NEAR Intents Cross-Chain Solver Quotes (USDC, NEAR, SOL, BTC)");
+// Test 3: NEAR Intents Quote with Dynamic Refund
+const quote = Engine.createNearIntentQuote(5000, "USDC", caseHigh.dynamicRefundPct);
+assert.strictEqual(quote.usdEquivalent, 5000);
+assert.strictEqual(quote.dynamicRefundPct, caseHigh.dynamicRefundPct);
+console.log("✅ [PASS] Test 3: NEAR Intents Quote & Dynamic Refund Amount: $" + quote.refundUsd);
 
 console.log("\n🎉 ALL EMBRYOGUARD VERIFICATION TESTS PASSED SUCCESSFULLY!");
