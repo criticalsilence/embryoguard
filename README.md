@@ -83,7 +83,21 @@ Patients enter four foundational parameters without needing to interpret complex
 
 ---
 
-## 4. Technical Architecture & Repository Structure
+## 4. NEAR Ecosystem Integration ("The Tools to Bring Your Idea to Life")
+
+EmbryoGuard integrates the official tools and infrastructure featured in the NEAR Hackathon builder toolkit:
+
+| NEAR Ecosystem Tool | How EmbryoGuard Uses It |
+| :--- | :--- |
+| **NEAR Intents** | Enables patients to lock IVF escrow packages and receive automated outcome refunds in `USDC`, `USDT`, `NEAR`, `SOL`, or `BTC` without manual bridging. |
+| **NEAR.AI** | Powers the Step 3 Consultation Concierge Chat Assistant, answering workflow and contact questions while strictly abstaining from unverified medical advice. |
+| **HOT Protocol & NEAR Testnet (`near-api-js`)** | Provides chain-abstracted Testnet wallet onboarding (`patient-ivf.testnet` / `MyNearWallet Testnet`) and live JSON-RPC synchronization against `https://rpc.testnet.near.org`. |
+| **Trezu, NEAR Business & SputnikDAO** | Multi-party escrow treasury structure governing the 3-stage milestone releases (`25%` OPU, `25%` Embryo Transfer, `50%` Clinical Outcome). |
+| **OutLayer** | Enforces transaction guardrails on `embryoguard-vault.testnet` so that negative-outcome refunds (`20%–65%`) can only be routed back to the patient's verified account. |
+
+---
+
+## 5. Technical Architecture & Repository Structure
 
 ```text
 embryoguard-near/
