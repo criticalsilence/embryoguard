@@ -18,7 +18,7 @@ A 30-year-old couple with normal ovarian reserve and normozoospermia may have a 
 
 1. **Individualized, Outcome-Linked Refund Ratios (Not Fixed Fees):** Instead of a rigid all-or-nothing payment or a static refund tier, EmbryoGuard computes an individualized preliminary indicator from core clinical parameters and pairs it with a **dynamic outcome refund ratio ranging from 20% to 65%**.
 2. **Independent Senior Embryologist Consultation & Clinic Matching:** Preliminary estimates are explicitly marked as non-final. Before any financial commitment is made, diagnostic records are reviewed directly by a Senior Clinical Embryologist who determines the appropriate laboratory protocol (`ICSI`, `NGS PGT-A`, `vitrification`) and refers the couple to an audited partner clinic.
-3. **Staged Milestone Escrow & Automated Refunds on NEAR Protocol:** Patient funds are never wired upfront to a clinic bank account. Instead, payments are held in a programmable escrow contract (`embryoguard-vault.near`) settled via **NEAR Intents**, releasing funds in clinical stages (`25%` at oocyte retrieval, `25%` at embryo transfer, and `50%` locked until pregnancy outcome—automatically refunding the patient's guaranteed ratio if the cycle is unsuccessful).
+3. **Staged Milestone Escrow & Automated Refunds on NEAR Protocol:** Patient funds are never wired upfront to a clinic bank account. Instead, payments are held in a programmable escrow contract (`embryoguard-vault.testnet`) settled via **NEAR Intents**, releasing funds according to each patient's **dynamic split**: if a patient's calculated outcome refund ratio is $R\%$ (`20%–65%`), then $R\%$ is locked in Stage 3 until pregnancy outcome (automatically refunded to the patient if negative), while the remaining $(100 - R)\%$ is split across Stage 1 (oocyte retrieval) and Stage 2 (embryo transfer).
 
 ---
 
@@ -75,11 +75,11 @@ Patients enter four foundational parameters without needing to interpret complex
 ### Step 3: Direct Clinical Embryologist Consultation Request
 - Attaches the patient's preliminary parameters to a structured consultation request sent directly to Caner Karaogul, M.Sc. via **Telegram** and **Email**, with strict client-side XSS sanitization (`createElement` / `textContent`) and data privacy consent.
 
-### Step 4: Staged Escrow & Outcome-Aligned Refund Schedule
-- Breaks down how the treatment package (`USDC`, `USDT`, `NEAR`, `SOL`, or `BTC` via NEAR Intents) is held in escrow:
-  - **Stage 1 (25%):** Released upon treatment initiation and oocyte retrieval (OPU).
-  - **Stage 2 (25%):** Released upon embryo culture and transfer procedure.
-  - **Stage 3 (50%):** Held in escrow until clinical pregnancy verification. If the outcome is negative, the patient's individualized refund ratio (`20%–65%` of total package) is returned directly from escrow.
+### Step 4: Dynamic Staged Escrow & Outcome-Aligned Refund Schedule
+- Breaks down how the treatment package (`USDC`, `USDT`, `NEAR`, `SOL`, or `BTC` via NEAR Intents) is dynamically partitioned in escrow according to the patient's calculated refund ratio $R\%$ (`20%–65%`):
+  - **Stage 1 ($\lfloor(100 - R)/2\rfloor\%$):** Released upon treatment initiation and oocyte retrieval (OPU).
+  - **Stage 2 ($\lceil(100 - R)/2\rceil\%$):** Released upon embryo culture and transfer procedure.
+  - **Stage 3 — Outcome Lock ($R\%$):** Held in escrow until clinical pregnancy verification. If the outcome is positive, $R\%$ is released to the clinic; if negative, that exact $R\%$ (`20%–65%` of total package) is returned directly from escrow to the patient's wallet.
 
 ---
 
@@ -92,7 +92,7 @@ EmbryoGuard integrates the official tools and infrastructure featured in the NEA
 | **NEAR Intents** | Enables patients to lock IVF escrow packages and receive automated outcome refunds in `USDC`, `USDT`, `NEAR`, `SOL`, or `BTC` without manual bridging. |
 | **NEAR.AI** | Powers the Step 3 Consultation Concierge Chat Assistant, answering workflow and contact questions while strictly abstaining from unverified medical advice. |
 | **HOT Protocol & NEAR Testnet (`near-api-js`)** | Provides chain-abstracted Testnet wallet onboarding (`patient-ivf.testnet` / `MyNearWallet Testnet`) and live JSON-RPC synchronization against `https://rpc.testnet.near.org`. |
-| **Trezu, NEAR Business & SputnikDAO** | Multi-party escrow treasury structure governing the 3-stage milestone releases (`25%` OPU, `25%` Embryo Transfer, `50%` Clinical Outcome). |
+| **Trezu, NEAR Business & SputnikDAO** | Multi-party escrow treasury structure governing the dynamic 3-stage milestone releases ($\lfloor(100-R)/2\rfloor\%$ OPU, $\lceil(100-R)/2\rceil\%$ Embryo Transfer, and $R\%$ Clinical Outcome Lock). |
 | **OutLayer** | Enforces transaction guardrails on `embryoguard-vault.testnet` so that negative-outcome refunds (`20%–65%`) can only be routed back to the patient's verified account. |
 
 ---
